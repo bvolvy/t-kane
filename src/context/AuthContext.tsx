@@ -23,31 +23,66 @@ const AuthContext = createContext<{
   dispatch: () => null,
 });
 
+const loadSavedAuth = () => {
+  try {
+    const savedUser = localStorage.getItem('user');
+    const savedOrg = localStorage.getItem('organization');
+    return {
+      user: savedUser ? JSON.parse(savedUser) : null,
+      organization: savedOrg ? JSON.parse(savedOrg) : null,
+    };
+  } catch (error) {
+    console.error('Error loading saved auth:', error);
+    return { user: null, organization: null };
+  }
+};
+
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
+  let newState: AuthState;
+  
   switch (action.type) {
     case 'SET_USER':
-      return { ...state, user: action.payload };
+      newState = { ...state, user: action.payload };
+      localStorage.setItem('user', JSON.stringify(action.payload));
+      return newState;
+      
     case 'SET_ORGANIZATION':
-      return { ...state, organization: action.payload };
+      newState = { ...state, organization: action.payload };
+      localStorage.setItem('organization', JSON.stringify(action.payload));
+      return newState;
+      
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
+      
     case 'SET_ERROR':
       return { ...state, error: action.payload };
+      
     case 'LOGOUT':
+      localStorage.removeItem('user');
+      localStorage.removeItem('organization');
+      localStorage.removeItem('authToken');
       return { ...initialState, isLoading: false };
+      
     default:
       return state;
   }
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useReducer(authReducer, initialState);
+  const savedAuth = loadSavedAuth();
+  const [state, dispatch] = useReducer(authReducer, {
+    ...initialState,
+    user: savedAuth.user,
+    organization: savedAuth.organization,
+  });
 
   useEffect(() => {
-    // Check for existing session
     const checkAuth = async () => {
       try {
-        // TODO: Implement session check
+        const token = localStorage.getItem('authToken');
+        if (!token || !state.user || !state.organization) {
+          dispatch({ type: 'LOGOUT' });
+        }
         dispatch({ type: 'SET_LOADING', payload: false });
       } catch (error) {
         dispatch({ type: 'SET_ERROR', payload: 'Authentication failed' });

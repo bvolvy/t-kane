@@ -41,43 +41,28 @@ const SignIn: React.FC = () => {
 
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Simulate API call to get organization data
+      const orgData = localStorage.getItem(`org_${formData.email}`);
+      if (!orgData) {
+        throw new Error('Organization not found');
+      }
 
-      // Mock user and organization data
+      const organization = JSON.parse(orgData);
       const mockUser = {
-        id: '1',
-        organizationId: '1',
+        id: organization.adminId,
+        organizationId: organization.id,
         email: formData.email,
-        name: 'Admin User',
+        name: organization.adminName,
         role: 'admin' as const,
-        createdAt: new Date().toISOString()
+        createdAt: organization.createdAt
       };
 
-      const mockOrganization = {
-        id: '1',
-        name: 'Demo Organization',
-        email: 'org@example.com',
-        createdAt: new Date().toISOString(),
-        settings: {
-          theme: {
-            primaryColor: '#8B5CF6',
-            secondaryColor: '#4F46E5'
-          },
-          features: {
-            loans: true,
-            tontine: true,
-            reports: true
-          }
-        }
-      };
-
-      // Update auth context
+      // Update auth context with user and organization data
       dispatch({ type: 'SET_USER', payload: mockUser });
-      dispatch({ type: 'SET_ORGANIZATION', payload: mockOrganization });
+      dispatch({ type: 'SET_ORGANIZATION', payload: organization });
 
       // Store auth token
-      localStorage.setItem('authToken', 'mock-token');
+      localStorage.setItem('authToken', `mock-token-${organization.id}`);
 
       // Redirect to dashboard
       navigate('/dashboard');
@@ -110,7 +95,7 @@ const SignIn: React.FC = () => {
                 placeholder="Enter your email"
                 error={errors.email}
                 fullWidth
-                leftIcon={<Mail className="text-gray-400\" size={20} />}
+                leftIcon={<Mail className="text-gray-400" size={20} />}
                 disabled={isLoading}
               />
             </div>
@@ -125,7 +110,7 @@ const SignIn: React.FC = () => {
                 placeholder="Enter your password"
                 error={errors.password}
                 fullWidth
-                leftIcon={<Lock className="text-gray-400\" size={20} />}
+                leftIcon={<Lock className="text-gray-400" size={20} />}
                 disabled={isLoading}
               />
             </div>

@@ -60,8 +60,50 @@ const SignUp: React.FC = () => {
     e.preventDefault();
     if (!validateStep2()) return;
 
-    // TODO: Implement actual registration
-    navigate('/dashboard');
+    const organizationId = crypto.randomUUID();
+    const adminId = crypto.randomUUID();
+    const createdAt = new Date().toISOString();
+
+    // Create organization data
+    const organizationData = {
+      id: organizationId,
+      name: formData.organizationName,
+      email: formData.organizationEmail,
+      adminId,
+      adminName: formData.adminName,
+      adminEmail: formData.adminEmail,
+      createdAt,
+      settings: {
+        theme: {
+          primaryColor: '#8B5CF6',
+          secondaryColor: '#4F46E5'
+        },
+        features: {
+          loans: true,
+          tontine: true,
+          reports: true
+        }
+      }
+    };
+
+    // Store organization data
+    localStorage.setItem(`org_${formData.adminEmail}`, JSON.stringify(organizationData));
+
+    // Initialize organization's data storage
+    localStorage.setItem(`appState_${organizationId}`, JSON.stringify({
+      clients: [],
+      grills: [],
+      tontineGroups: [],
+      adminProfile: {
+        name: formData.adminName,
+        email: formData.adminEmail,
+        role: 'System Administrator',
+        lastLogin: new Date().toISOString()
+      },
+      notifications: []
+    }));
+
+    navigate('/signin');
   };
 
   return (
@@ -116,7 +158,7 @@ const SignUp: React.FC = () => {
                   placeholder="Enter organization name"
                   error={errors.organizationName}
                   fullWidth
-                  leftIcon={<Building2 className="text-gray-400\" size={20} />}
+                  leftIcon={<Building2 className="text-gray-400" size={20} />}
                 />
 
                 <Input
@@ -128,7 +170,7 @@ const SignUp: React.FC = () => {
                   placeholder="Enter organization email"
                   error={errors.organizationEmail}
                   fullWidth
-                  leftIcon={<Mail className="text-gray-400\" size={20} />}
+                  leftIcon={<Mail className="text-gray-400" size={20} />}
                 />
 
                 <Button variant="primary" type="button" onClick={handleNext} isFullWidth>
@@ -145,7 +187,7 @@ const SignUp: React.FC = () => {
                   placeholder="Enter admin name"
                   error={errors.adminName}
                   fullWidth
-                  leftIcon={<User className="text-gray-400\" size={20} />}
+                  leftIcon={<User className="text-gray-400" size={20} />}
                 />
 
                 <Input
@@ -157,7 +199,7 @@ const SignUp: React.FC = () => {
                   placeholder="Enter admin email"
                   error={errors.adminEmail}
                   fullWidth
-                  leftIcon={<Mail className="text-gray-400\" size={20} />}
+                  leftIcon={<Mail className="text-gray-400" size={20} />}
                 />
 
                 <Input
@@ -169,7 +211,7 @@ const SignUp: React.FC = () => {
                   placeholder="Create password"
                   error={errors.password}
                   fullWidth
-                  leftIcon={<Lock className="text-gray-400\" size={20} />}
+                  leftIcon={<Lock className="text-gray-400" size={20} />}
                 />
 
                 <Input
@@ -181,7 +223,7 @@ const SignUp: React.FC = () => {
                   placeholder="Confirm password"
                   error={errors.confirmPassword}
                   fullWidth
-                  leftIcon={<Lock className="text-gray-400\" size={20} />}
+                  leftIcon={<Lock className="text-gray-400" size={20} />}
                 />
 
                 <div className="flex items-start">
