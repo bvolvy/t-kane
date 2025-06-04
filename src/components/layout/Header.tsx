@@ -1,13 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Menu, User, Users, Bell } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   toggleSidebar: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
+  const navigate = useNavigate();
   const { state } = useAppContext();
+  const { state: authState, dispatch: authDispatch } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { adminProfile, notifications } = state;
@@ -25,6 +29,11 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleLogout = () => {
+    authDispatch({ type: 'LOGOUT' });
+    navigate('/signin');
+  };
 
   return (
     <header className="bg-gradient-to-r from-purple-700 to-purple-900 text-white shadow-lg">
@@ -74,8 +83,8 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
                 className="flex items-center space-x-3 hover:bg-purple-600 rounded-lg p-2 transition-colors duration-200"
               >
                 <div className="text-sm text-right hidden sm:block">
-                  <p className="font-medium">{adminProfile.name}</p>
-                  <p className="text-purple-200">{adminProfile.email}</p>
+                  <p className="font-medium">{authState.user?.name || adminProfile.name}</p>
+                  <p className="text-purple-200">{authState.organization?.name}</p>
                 </div>
                 <div className="h-10 w-10 rounded-full bg-purple-500 flex items-center justify-center">
                   <User size={20} />
@@ -107,16 +116,12 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
                     Notifications
                   </a>
                   <hr className="my-1" />
-                  <a
-                    href="#logout"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      // Handle logout
-                    }}
-                    className="block px-4 py-2 text-red-600 hover:bg-red-50"
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
                   >
                     Logout
-                  </a>
+                  </button>
                 </div>
               )}
             </div>
