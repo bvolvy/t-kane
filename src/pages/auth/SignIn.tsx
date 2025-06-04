@@ -61,7 +61,7 @@ const SignIn: React.FC = () => {
                 placeholder="Enter your email"
                 error={errors.email}
                 fullWidth
-                leftIcon={<Mail className="text-gray-400" size={20} />}
+                leftIcon={<Mail className="text-gray-400\" size={20} />}
               />
             </div>
 
@@ -75,7 +75,7 @@ const SignIn: React.FC = () => {
                 placeholder="Enter your password"
                 error={errors.password}
                 fullWidth
-                leftIcon={<Lock className="text-gray-400" size={20} />}
+                leftIcon={<Lock className="text-gray-400\" size={20} />}
               />
             </div>
 
