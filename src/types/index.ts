@@ -87,6 +87,12 @@ export interface AdminProfile {
   role: string;
   avatar?: string;
   lastLogin?: string;
+  twoFactorEnabled?: boolean;
+  notificationPreferences?: {
+    email: boolean;
+    push: boolean;
+    desktop: boolean;
+  };
 }
 
 export interface Notification {
@@ -97,6 +103,8 @@ export interface Notification {
   date: string;
   read: boolean;
   link?: string;
+  category?: 'system' | 'security' | 'transaction' | 'user';
+  priority?: 'low' | 'medium' | 'high';
 }
 
 export interface TontineGroup {

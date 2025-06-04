@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../../context/AppContext';
-import { User, Mail, Shield, Calendar, Edit2, Key, Lock, Globe } from 'lucide-react';
+import { User, Mail, Shield, Calendar, Edit2, Key, Lock, Globe, Camera } from 'lucide-react';
 import Button from '../common/Button';
 import Card from '../common/Card';
 import Input from '../common/Input';
@@ -16,6 +16,7 @@ const AdminProfile: React.FC = () => {
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
+    avatar: adminProfile.avatar || '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -60,11 +61,11 @@ const AdminProfile: React.FC = () => {
       payload: { 
         ...adminProfile, 
         name: formData.name,
-        email: formData.email
+        email: formData.email,
+        avatar: formData.avatar
       }
     });
 
-    // Add notification
     dispatch({
       type: 'ADD_NOTIFICATION',
       payload: {
@@ -85,7 +86,6 @@ const AdminProfile: React.FC = () => {
     if (!validatePasswordForm()) return;
 
     // Here you would typically handle password change with your backend
-    // For now, we'll just show a success notification
     dispatch({
       type: 'ADD_NOTIFICATION',
       payload: {
@@ -105,6 +105,17 @@ const AdminProfile: React.FC = () => {
       newPassword: '',
       confirmPassword: ''
     }));
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, avatar: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -127,6 +138,31 @@ const AdminProfile: React.FC = () => {
 
           {isEditing ? (
             <form onSubmit={handleProfileSubmit} className="space-y-4">
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="relative">
+                  <div className="w-24 h-24 rounded-full bg-purple-100 flex items-center justify-center overflow-hidden">
+                    {formData.avatar ? (
+                      <img src={formData.avatar} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <User size={40} className="text-purple-600" />
+                    )}
+                  </div>
+                  <label className="absolute bottom-0 right-0 bg-purple-600 rounded-full p-2 cursor-pointer hover:bg-purple-700 transition-colors">
+                    <Camera size={16} className="text-white" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleAvatarChange}
+                    />
+                  </label>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Upload a new profile photo</p>
+                  <p className="text-xs text-gray-400">JPG, PNG or GIF (max. 2MB)</p>
+                </div>
+              </div>
+
               <Input
                 label="Name"
                 name="name"
@@ -247,8 +283,12 @@ const AdminProfile: React.FC = () => {
 
         <Card>
           <div className="text-center">
-            <div className="w-24 h-24 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
-              <User size={40} className="text-purple-600" />
+            <div className="w-24 h-24 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4 overflow-hidden">
+              {adminProfile.avatar ? (
+                <img src={adminProfile.avatar} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <User size={40} className="text-purple-600" />
+              )}
             </div>
             <h3 className="text-lg font-semibold text-gray-800 mb-1">{adminProfile.name}</h3>
             <p className="text-gray-500 mb-4">{adminProfile.role}</p>
