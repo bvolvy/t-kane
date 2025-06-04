@@ -1,6 +1,7 @@
 import { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { AppState, Client, Grill, Payment, Withdrawal, Loan, LoanPayment, Transfer, AdminProfile, Notification, TontineGroup, Deposit } from '../types';
 import { generatePayments } from '../utils/grillUtils';
+import { useAuth } from './AuthContext';
 
 type Action =
   | { type: 'SET_CLIENTS'; payload: Client[] }
@@ -88,9 +89,9 @@ const initialState: AppState = {
   currentTontineGroup: null
 };
 
-const loadSavedState = (): Partial<AppState> => {
+const loadSavedState = (organizationId: string): Partial<AppState> => {
   try {
-    const savedState = localStorage.getItem('appState');
+    const savedState = localStorage.getItem(`appState_${organizationId}`);
     if (savedState) {
       const parsedState = JSON.parse(savedState);
       return {
@@ -107,12 +108,6 @@ const loadSavedState = (): Partial<AppState> => {
   return {};
 };
 
-const savedState = loadSavedState();
-const getInitialState = (): AppState => ({
-  ...initialState,
-  ...savedState
-});
-
 const AppContext = createContext<{
   state: AppState;
   dispatch: React.Dispatch<Action>;
@@ -121,7 +116,7 @@ const AppContext = createContext<{
   dispatch: () => null,
 });
 
-const saveState = (state: AppState) => {
+const saveState = (state: AppState, organizationId: string) => {
   try {
     const stateToSave = {
       clients: state.clients,
@@ -130,7 +125,7 @@ const saveState = (state: AppState) => {
       adminProfile: state.adminProfile,
       notifications: state.notifications
     };
-    localStorage.setItem('appState', JSON.stringify(stateToSave));
+    localStorage.setItem(`appState_${organizationId}`, JSON.stringify(stateToSave));
   } catch (error) {
     console.error('Error saving state:', error);
   }
@@ -654,12 +649,23 @@ const reducer = (state: AppState, action: Action): AppState => {
       return state;
   }
 
-  saveState(newState);
   return newState;
 };
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [state, dispatch] = useReducer(reducer, getInitialState());
+  const { state: authState } = useAuth();
+  const organizationId = authState.organization?.id || 'default';
+  
+  const [state, dispatch] = useReducer(
+    reducer, 
+    { ...initialState, ...loadSavedState(organizationId) }
+  );
+
+  useEffect(() => {
+    if (organizationId) {
+      saveState(state, organizationId);
+    }
+  }, [state, organizationId]);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>
