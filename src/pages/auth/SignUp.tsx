@@ -158,7 +158,7 @@ const SignUp: React.FC = () => {
                   placeholder="Enter organization name"
                   error={errors.organizationName}
                   fullWidth
-                  leftIcon={<Building2 className="text-gray-400" size={20} />}
+                  leftIcon={<Building2 className="text-gray-400\" size={20} />}
                 />
 
                 <Input
@@ -170,7 +170,7 @@ const SignUp: React.FC = () => {
                   placeholder="Enter organization email"
                   error={errors.organizationEmail}
                   fullWidth
-                  leftIcon={<Mail className="text-gray-400" size={20} />}
+                  leftIcon={<Mail className="text-gray-400\" size={20} />}
                 />
 
                 <Button variant="primary" type="button" onClick={handleNext} isFullWidth>
@@ -187,7 +187,7 @@ const SignUp: React.FC = () => {
                   placeholder="Enter admin name"
                   error={errors.adminName}
                   fullWidth
-                  leftIcon={<User className="text-gray-400" size={20} />}
+                  leftIcon={<User className="text-gray-400\" size={20} />}
                 />
 
                 <Input
@@ -199,7 +199,7 @@ const SignUp: React.FC = () => {
                   placeholder="Enter admin email"
                   error={errors.adminEmail}
                   fullWidth
-                  leftIcon={<Mail className="text-gray-400" size={20} />}
+                  leftIcon={<Mail className="text-gray-400\" size={20} />}
                 />
 
                 <Input
@@ -211,7 +211,7 @@ const SignUp: React.FC = () => {
                   placeholder="Create password"
                   error={errors.password}
                   fullWidth
-                  leftIcon={<Lock className="text-gray-400" size={20} />}
+                  leftIcon={<Lock className="text-gray-400\" size={20} />}
                 />
 
                 <Input
@@ -223,7 +223,7 @@ const SignUp: React.FC = () => {
                   placeholder="Confirm password"
                   error={errors.confirmPassword}
                   fullWidth
-                  leftIcon={<Lock className="text-gray-400" size={20} />}
+                  leftIcon={<Lock className="text-gray-400\" size={20} />}
                 />
 
                 <div className="flex items-start">
