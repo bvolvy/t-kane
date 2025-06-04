@@ -1,5 +1,5 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 interface PrivateRouteProps {
@@ -9,6 +9,14 @@ interface PrivateRouteProps {
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const { state } = useAuth();
   const { user, isLoading } = state;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (!token && !isLoading) {
+      navigate('/signin', { replace: true });
+    }
+  }, [navigate, isLoading]);
 
   if (isLoading) {
     return (

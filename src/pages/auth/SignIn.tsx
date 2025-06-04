@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppContext } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import { Lock, Mail } from 'lucide-react';
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
+  const { dispatch } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -35,10 +37,57 @@ const SignIn: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validateForm() || isLoading) return;
 
-    // TODO: Implement actual authentication
-    navigate('/dashboard');
+    setIsLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Mock user and organization data
+      const mockUser = {
+        id: '1',
+        organizationId: '1',
+        email: formData.email,
+        name: 'Admin User',
+        role: 'admin' as const,
+        createdAt: new Date().toISOString()
+      };
+
+      const mockOrganization = {
+        id: '1',
+        name: 'Demo Organization',
+        email: 'org@example.com',
+        createdAt: new Date().toISOString(),
+        settings: {
+          theme: {
+            primaryColor: '#8B5CF6',
+            secondaryColor: '#4F46E5'
+          },
+          features: {
+            loans: true,
+            tontine: true,
+            reports: true
+          }
+        }
+      };
+
+      // Update auth context
+      dispatch({ type: 'SET_USER', payload: mockUser });
+      dispatch({ type: 'SET_ORGANIZATION', payload: mockOrganization });
+
+      // Store auth token
+      localStorage.setItem('authToken', 'mock-token');
+
+      // Redirect to dashboard
+      navigate('/dashboard');
+    } catch (error) {
+      setErrors({
+        submit: 'Invalid email or password'
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -61,7 +110,8 @@ const SignIn: React.FC = () => {
                 placeholder="Enter your email"
                 error={errors.email}
                 fullWidth
-                leftIcon={<Mail className="text-gray-400\" size={20} />}
+                leftIcon={<Mail className="text-gray-400" size={20} />}
+                disabled={isLoading}
               />
             </div>
 
@@ -75,7 +125,8 @@ const SignIn: React.FC = () => {
                 placeholder="Enter your password"
                 error={errors.password}
                 fullWidth
-                leftIcon={<Lock className="text-gray-400\" size={20} />}
+                leftIcon={<Lock className="text-gray-400" size={20} />}
+                disabled={isLoading}
               />
             </div>
 
@@ -87,6 +138,7 @@ const SignIn: React.FC = () => {
                   checked={formData.rememberMe}
                   onChange={handleChange}
                   className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                  disabled={isLoading}
                 />
                 <span className="ml-2 text-sm text-gray-600">Remember me</span>
               </label>
@@ -99,8 +151,24 @@ const SignIn: React.FC = () => {
               </a>
             </div>
 
-            <Button variant="primary" type="submit" isFullWidth>
-              Sign In
+            {errors.submit && (
+              <p className="text-sm text-red-600 text-center">{errors.submit}</p>
+            )}
+
+            <Button 
+              variant="primary" 
+              type="submit" 
+              isFullWidth 
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
+                  Signing in...
+                </div>
+              ) : (
+                'Sign In'
+              )}
             </Button>
 
             <p className="text-center text-sm text-gray-600">
