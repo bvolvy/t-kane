@@ -75,6 +75,13 @@ const SignIn: React.FC = () => {
     }
   };
 
+  const pricingData = [
+    { day: 1, amount: 5 }, { day: 2, amount: 10 }, { day: 3, amount: 15 }, { day: 4, amount: 20 },
+    { day: 5, amount: 25 }, { day: 6, amount: 30 }, { day: 7, amount: 35 }, { day: 8, amount: 40 },
+    { day: 9, amount: 45 }, { day: 10, amount: 50 }, { day: 11, amount: 55 }, { day: 12, amount: 60 },
+    { day: 13, amount: 65 }, { day: 14, amount: 70 }, { day: 15, amount: 75 }, { day: 16, amount: 80 }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-600 to-purple-900 flex items-center justify-center p-4">
       <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -95,7 +102,7 @@ const SignIn: React.FC = () => {
                 placeholder="Enter your email"
                 error={errors.email}
                 fullWidth
-                leftIcon={<Mail className="text-gray-400\" size={20} />}
+                leftIcon={<Mail className="text-gray-400" size={20} />}
                 disabled={isLoading}
               />
             </div>
@@ -110,7 +117,7 @@ const SignIn: React.FC = () => {
                 placeholder="Enter your password"
                 error={errors.password}
                 fullWidth
-                leftIcon={<Lock className="text-gray-400\" size={20} />}
+                leftIcon={<Lock className="text-gray-400" size={20} />}
                 disabled={isLoading}
               />
             </div>
@@ -168,31 +175,54 @@ const SignIn: React.FC = () => {
           </form>
         </div>
 
-        <div className="hidden md:block bg-gradient-to-br from-purple-600 to-purple-900 p-12 text-white flex flex-col justify-center">
+        <div className="hidden md:flex flex-col bg-gradient-to-br from-purple-600 to-purple-900 p-12 text-white">
           <h2 className="text-3xl font-bold mb-6">Welcome to T-Kanè</h2>
           <p className="text-purple-100 mb-8">
             Manage your organization's financial operations efficiently and securely.
           </p>
-          <ul className="space-y-4">
-            <li className="flex items-center">
-              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-              Secure Multi-Organization Platform
-            </li>
-            <li className="flex items-center">
-              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-              Complete Financial Management
-            </li>
-            <li className="flex items-center">
-              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-              Real-time Analytics & Reporting
-            </li>
-          </ul>
+          
+          <div className="mt-4">
+            <h3 className="text-xl font-semibold mb-4">Daily Contribution Plan</h3>
+            <div className="grid grid-cols-4 gap-2 bg-white/10 p-4 rounded-lg backdrop-blur-sm">
+              {pricingData.map(({ day, amount }) => (
+                <div
+                  key={day}
+                  className={`p-3 rounded-lg text-center ${
+                    day <= 4 ? 'bg-pink-400/20' :
+                    day <= 8 ? 'bg-orange-400/20' :
+                    day <= 12 ? 'bg-yellow-400/20' :
+                    'bg-green-400/20'
+                  }`}
+                >
+                  <div className="text-sm font-medium">Day {day}</div>
+                  <div className="text-lg font-bold">${amount}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <ul className="space-y-4">
+              <li className="flex items-center">
+                <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+                Secure Multi-Organization Platform
+              </li>
+              <li className="flex items-center">
+                <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+                Complete Financial Management
+              </li>
+              <li className="flex items-center">
+                <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+                Real-time Analytics & Reporting
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
