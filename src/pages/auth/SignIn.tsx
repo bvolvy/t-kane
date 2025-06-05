@@ -75,13 +75,6 @@ const SignIn: React.FC = () => {
     }
   };
 
-  const pricingData = [
-    { day: 1, amount: 5 }, { day: 2, amount: 10 }, { day: 3, amount: 15 }, { day: 4, amount: 20 },
-    { day: 5, amount: 25 }, { day: 6, amount: 30 }, { day: 7, amount: 35 }, { day: 8, amount: 40 },
-    { day: 9, amount: 45 }, { day: 10, amount: 50 }, { day: 11, amount: 55 }, { day: 12, amount: 60 },
-    { day: 13, amount: 65 }, { day: 14, amount: 70 }, { day: 15, amount: 75 }, { day: 16, amount: 80 }
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-600 to-purple-900 flex items-center justify-center p-4">
       <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -180,26 +173,6 @@ const SignIn: React.FC = () => {
           <p className="text-purple-100 mb-8">
             Manage your organization's financial operations efficiently and securely.
           </p>
-          
-          <div className="mt-4">
-            <h3 className="text-xl font-semibold mb-4">Daily Contribution Plan</h3>
-            <div className="grid grid-cols-4 gap-2 bg-white/10 p-4 rounded-lg backdrop-blur-sm">
-              {pricingData.map(({ day, amount }) => (
-                <div
-                  key={day}
-                  className={`p-3 rounded-lg text-center ${
-                    day <= 4 ? 'bg-pink-400/20' :
-                    day <= 8 ? 'bg-orange-400/20' :
-                    day <= 12 ? 'bg-yellow-400/20' :
-                    'bg-green-400/20'
-                  }`}
-                >
-                  <div className="text-sm font-medium">Day {day}</div>
-                  <div className="text-lg font-bold">${amount}</div>
-                </div>
-              ))}
-            </div>
-          </div>
 
           <div className="mt-8">
             <ul className="space-y-4">
