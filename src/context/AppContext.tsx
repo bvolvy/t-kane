@@ -43,7 +43,8 @@ type Action =
       memberId: string; 
       contributionId: string; 
       status: 'paid' | 'pending';
-    }};
+    }}
+  | { type: 'LOAD_ORGANIZATION_DATA'; payload: Partial<AppState> };
 
 const defaultGrills: Grill[] = [
   {
@@ -135,6 +136,18 @@ const reducer = (state: AppState, action: Action): AppState => {
   let newState: AppState;
 
   switch (action.type) {
+    case 'LOAD_ORGANIZATION_DATA':
+      newState = {
+        ...state,
+        ...action.payload,
+        // Reset current selections when switching organizations
+        currentClient: null,
+        currentGrill: null,
+        currentLoan: null,
+        currentTontineGroup: null
+      };
+      break;
+
     case 'SET_CLIENTS':
       newState = { ...state, clients: action.payload };
       break;
@@ -656,13 +669,19 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const { state: authState } = useAuth();
   const organizationId = authState.organization?.id || 'default';
   
-  const [state, dispatch] = useReducer(
-    reducer, 
-    { ...initialState, ...loadSavedState(organizationId) }
-  );
+  const [state, dispatch] = useReducer(reducer, initialState);
 
+  // Load organization data when organization changes
   useEffect(() => {
-    if (organizationId) {
+    if (organizationId && organizationId !== 'default') {
+      const savedData = loadSavedState(organizationId);
+      dispatch({ type: 'LOAD_ORGANIZATION_DATA', payload: savedData });
+    }
+  }, [organizationId]);
+
+  // Save state when it changes
+  useEffect(() => {
+    if (organizationId && organizationId !== 'default') {
       saveState(state, organizationId);
     }
   }, [state, organizationId]);

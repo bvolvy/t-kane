@@ -95,7 +95,6 @@ const SignIn: React.FC = () => {
                 placeholder="Enter your email"
                 error={errors.email}
                 fullWidth
-                leftIcon={<Mail className="text-gray-400\" size={20} />}
                 disabled={isLoading}
               />
             </div>
@@ -110,7 +109,6 @@ const SignIn: React.FC = () => {
                 placeholder="Enter your password"
                 error={errors.password}
                 fullWidth
-                leftIcon={<Lock className="text-gray-400\" size={20} />}
                 disabled={isLoading}
               />
             </div>
@@ -128,12 +126,12 @@ const SignIn: React.FC = () => {
                 <span className="ml-2 text-sm text-gray-600">Remember me</span>
               </label>
 
-              <a
-                href="/forgot-password"
+              <button
+                type="button"
                 className="text-sm text-purple-600 hover:text-purple-800"
               >
                 Forgot Password?
-              </a>
+              </button>
             </div>
 
             {errors.submit && (
@@ -158,12 +156,13 @@ const SignIn: React.FC = () => {
 
             <p className="text-center text-sm text-gray-600">
               Don't have an account?{' '}
-              <a
-                href="/signup"
+              <button
+                type="button"
+                onClick={() => navigate('/signup')}
                 className="text-purple-600 hover:text-purple-800 font-medium"
               >
                 Create Organization
-              </a>
+              </button>
             </p>
           </form>
         </div>

@@ -89,10 +89,37 @@ const SignUp: React.FC = () => {
     // Store organization data
     localStorage.setItem(`org_${formData.adminEmail}`, JSON.stringify(organizationData));
 
-    // Initialize organization's data storage
+    // Initialize organization's data storage with default grills
+    const defaultGrills = [
+      {
+        id: '1',
+        name: 'Basic Plan',
+        baseAmount: 3,
+        duration: 90,
+        description: '$3 per day over 90 days',
+        adminPercentage: 10,
+      },
+      {
+        id: '2',
+        name: 'Standard Plan',
+        baseAmount: 5,
+        duration: 90,
+        description: '$5 per day over 90 days',
+        adminPercentage: 10,
+      },
+      {
+        id: '3',
+        name: 'Premium Plan',
+        baseAmount: 10,
+        duration: 90,
+        description: '$10 per day over 90 days',
+        adminPercentage: 10,
+      },
+    ];
+
     localStorage.setItem(`appState_${organizationId}`, JSON.stringify({
       clients: [],
-      grills: [],
+      grills: defaultGrills,
       tontineGroups: [],
       adminProfile: {
         name: formData.adminName,
@@ -158,7 +185,6 @@ const SignUp: React.FC = () => {
                   placeholder="Enter organization name"
                   error={errors.organizationName}
                   fullWidth
-                  leftIcon={<Building2 className="text-gray-400\" size={20} />}
                 />
 
                 <Input
@@ -170,7 +196,6 @@ const SignUp: React.FC = () => {
                   placeholder="Enter organization email"
                   error={errors.organizationEmail}
                   fullWidth
-                  leftIcon={<Mail className="text-gray-400\" size={20} />}
                 />
 
                 <Button variant="primary" type="button" onClick={handleNext} isFullWidth>
@@ -187,7 +212,6 @@ const SignUp: React.FC = () => {
                   placeholder="Enter admin name"
                   error={errors.adminName}
                   fullWidth
-                  leftIcon={<User className="text-gray-400\" size={20} />}
                 />
 
                 <Input
@@ -199,7 +223,6 @@ const SignUp: React.FC = () => {
                   placeholder="Enter admin email"
                   error={errors.adminEmail}
                   fullWidth
-                  leftIcon={<Mail className="text-gray-400\" size={20} />}
                 />
 
                 <Input
@@ -211,7 +234,6 @@ const SignUp: React.FC = () => {
                   placeholder="Create password"
                   error={errors.password}
                   fullWidth
-                  leftIcon={<Lock className="text-gray-400\" size={20} />}
                 />
 
                 <Input
@@ -223,7 +245,6 @@ const SignUp: React.FC = () => {
                   placeholder="Confirm password"
                   error={errors.confirmPassword}
                   fullWidth
-                  leftIcon={<Lock className="text-gray-400\" size={20} />}
                 />
 
                 <div className="flex items-start">
@@ -236,13 +257,13 @@ const SignUp: React.FC = () => {
                   />
                   <label className="ml-2 text-sm text-gray-600">
                     I agree to the{' '}
-                    <a href="/terms" className="text-purple-600 hover:text-purple-800">
+                    <button type="button" className="text-purple-600 hover:text-purple-800">
                       Terms of Service
-                    </a>{' '}
+                    </button>{' '}
                     and{' '}
-                    <a href="/privacy" className="text-purple-600 hover:text-purple-800">
+                    <button type="button" className="text-purple-600 hover:text-purple-800">
                       Privacy Policy
-                    </a>
+                    </button>
                   </label>
                 </div>
                 {errors.agreeToTerms && (
@@ -267,12 +288,13 @@ const SignUp: React.FC = () => {
 
             <p className="text-center text-sm text-gray-600">
               Already have an account?{' '}
-              <a
-                href="/signin"
+              <button
+                type="button"
+                onClick={() => navigate('/signin')}
                 className="text-purple-600 hover:text-purple-800 font-medium"
               >
                 Sign In
-              </a>
+              </button>
             </p>
           </form>
         </div>
