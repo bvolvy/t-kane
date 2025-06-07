@@ -181,7 +181,7 @@ const SignIn: React.FC = () => {
                 <img 
                   src="/cash.png" 
                   alt="T-Kanè Logo" 
-                  className="w-70 h-70 object-contain"
+                  className="w-80 h-80 object-contain"
                 />
                 {/* Floating sparkles */}
                 <Sparkles className="w-4 h-4 text-purple-200 absolute -top-2 -right-2 animate-pulse" />
