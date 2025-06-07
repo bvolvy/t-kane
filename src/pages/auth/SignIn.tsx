@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
-import { Lock, Mail } from 'lucide-react';
+import { Lock, Mail, Coins, TrendingUp, Shield, Sparkles } from 'lucide-react';
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
@@ -167,33 +167,66 @@ const SignIn: React.FC = () => {
           </form>
         </div>
 
-        <div className="hidden md:flex flex-col bg-gradient-to-br from-purple-600 to-purple-900 p-12 text-white">
-          <h2 className="text-3xl font-bold mb-6">Welcome to T-Kanè</h2>
-          <p className="text-purple-100 mb-8">
-            Manage your organization's financial operations efficiently and securely.
+        <div className="hidden md:flex flex-col bg-gradient-to-br from-purple-600 to-purple-900 p-12 text-white relative overflow-hidden">
+          {/* Background decorative elements */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -translate-y-16 translate-x-16"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white bg-opacity-5 rounded-full translate-y-12 -translate-x-12"></div>
+          
+          {/* Beautiful Logo */}
+          <div className="flex items-center justify-center mb-8">
+            <div className="relative">
+              {/* Main logo container with gradient background */}
+              <div className="w-24 h-24 bg-gradient-to-br from-white to-purple-100 rounded-2xl shadow-2xl flex items-center justify-center transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                {/* Inner circle with icons */}
+                <div className="relative w-16 h-16 bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl flex items-center justify-center">
+                  <Coins className="w-8 h-8 text-white" />
+                  {/* Floating sparkles */}
+                  <Sparkles className="w-3 h-3 text-purple-200 absolute -top-1 -right-1 animate-pulse" />
+                  <TrendingUp className="w-3 h-3 text-purple-200 absolute -bottom-1 -left-1 animate-pulse delay-300" />
+                </div>
+              </div>
+              
+              {/* Floating elements around logo */}
+              <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full shadow-lg animate-bounce delay-100"></div>
+              <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-green-400 rounded-full shadow-lg animate-bounce delay-500"></div>
+            </div>
+          </div>
+
+          <h2 className="text-3xl font-bold mb-6 text-center">Welcome to T-Kanè</h2>
+          <p className="text-purple-100 mb-8 text-center leading-relaxed">
+            Manage your organization's financial operations efficiently and securely with our comprehensive platform.
           </p>
 
-          <div className="mt-8">
-            <ul className="space-y-4">
-              <li className="flex items-center">
-                <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-                Secure Multi-Organization Platform
-              </li>
-              <li className="flex items-center">
-                <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-                Complete Financial Management
-              </li>
-              <li className="flex items-center">
-                <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-                Real-time Analytics & Reporting
-              </li>
-            </ul>
+          <div className="mt-8 space-y-6">
+            <div className="flex items-center p-4 bg-white bg-opacity-10 rounded-xl backdrop-blur-sm">
+              <div className="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-4">
+                <Shield className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Secure Multi-Organization Platform</h3>
+                <p className="text-purple-100 text-sm">Enterprise-grade security for your data</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center p-4 bg-white bg-opacity-10 rounded-xl backdrop-blur-sm">
+              <div className="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-4">
+                <TrendingUp className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Complete Financial Management</h3>
+                <p className="text-purple-100 text-sm">All-in-one solution for your business</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center p-4 bg-white bg-opacity-10 rounded-xl backdrop-blur-sm">
+              <div className="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-4">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Real-time Analytics & Reporting</h3>
+                <p className="text-purple-100 text-sm">Insights that drive growth</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
