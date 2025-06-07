@@ -172,23 +172,25 @@ const SignIn: React.FC = () => {
           <div className="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -translate-y-16 translate-x-16"></div>
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white bg-opacity-5 rounded-full translate-y-12 -translate-x-12"></div>
           
-          {/* Beautiful Logo */}
+          {/* Beautiful Logo using cash.png */}
           <div className="flex items-center justify-center mb-8">
             <div className="relative">
               {/* Main logo container with gradient background */}
-              <div className="w-24 h-24 bg-gradient-to-br from-white to-purple-100 rounded-2xl shadow-2xl flex items-center justify-center transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                {/* Inner circle with icons */}
-                <div className="relative w-16 h-16 bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl flex items-center justify-center">
-                  <Coins className="w-8 h-8 text-white" />
-                  {/* Floating sparkles */}
-                  <Sparkles className="w-3 h-3 text-purple-200 absolute -top-1 -right-1 animate-pulse" />
-                  <TrendingUp className="w-3 h-3 text-purple-200 absolute -bottom-1 -left-1 animate-pulse delay-300" />
-                </div>
+              <div className="w-32 h-32 bg-gradient-to-br from-white to-purple-100 rounded-3xl shadow-2xl flex items-center justify-center transform hover:scale-105 transition-transform duration-300">
+                {/* Cash image */}
+                <img 
+                  src="/cash.png" 
+                  alt="T-Kanè Logo" 
+                  className="w-20 h-20 object-contain"
+                />
+                {/* Floating sparkles */}
+                <Sparkles className="w-4 h-4 text-purple-200 absolute -top-2 -right-2 animate-pulse" />
+                <TrendingUp className="w-4 h-4 text-purple-200 absolute -bottom-2 -left-2 animate-pulse delay-300" />
               </div>
               
               {/* Floating elements around logo */}
-              <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full shadow-lg animate-bounce delay-100"></div>
-              <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-green-400 rounded-full shadow-lg animate-bounce delay-500"></div>
+              <div className="absolute -top-3 -right-3 w-8 h-8 bg-yellow-400 rounded-full shadow-lg animate-bounce delay-100"></div>
+              <div className="absolute -bottom-3 -left-3 w-6 h-6 bg-green-400 rounded-full shadow-lg animate-bounce delay-500"></div>
             </div>
           </div>
 
