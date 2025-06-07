@@ -81,7 +81,7 @@ const SignIn: React.FC = () => {
         <div className="p-8 md:p-12">
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Sign In</h1>
-            <p className="text-gray-600">Welcome back! Please sign in to continue.</p>
+            <p className="text-gray-600">Welcome! Please sign in to continue.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
