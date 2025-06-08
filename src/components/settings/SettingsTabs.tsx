@@ -1,7 +1,9 @@
 import React from 'react';
-import { Save, Shield } from 'lucide-react';
+import { Save, Shield, Globe, Users } from 'lucide-react';
 import BackupRestore from './BackupRestore';
 import SecuritySettings from './SecuritySettings';
+import LanguageSettings from './LanguageSettings';
+import RolePermissions from './RolePermissions';
 
 interface SettingsTabsProps {
   activeTab: string;
@@ -12,6 +14,8 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({ activeTab, setActiveTab }) 
   const tabs = [
     { id: 'backup', label: 'Backup & Restore', icon: Save },
     { id: 'security', label: 'Security & Privacy', icon: Shield },
+    { id: 'language', label: 'Language & Regional', icon: Globe },
+    { id: 'roles', label: 'Roles & Permissions', icon: Users },
   ];
 
   return (
@@ -42,9 +46,11 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({ activeTab, setActiveTab }) 
       <div className="mt-6">
         {activeTab === 'backup' && <BackupRestore />}
         {activeTab === 'security' && <SecuritySettings />}
+        {activeTab === 'language' && <LanguageSettings />}
+        {activeTab === 'roles' && <RolePermissions />}
       </div>
     </div>
   );
 };
 
-export default SettingsTabs
+export default SettingsTabs;

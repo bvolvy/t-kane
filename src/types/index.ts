@@ -137,6 +137,47 @@ export interface TontineContribution {
   status: 'pending' | 'paid';
 }
 
+export interface OrganizationMember {
+  id: string;
+  name: string;
+  email: string;
+  role: 'owner' | 'admin' | 'manager' | 'viewer';
+  permissions: Permission[];
+  status: 'active' | 'inactive' | 'pending';
+  invitedBy?: string;
+  joinedAt: string;
+  lastLogin?: string;
+  avatar?: string;
+}
+
+export interface Permission {
+  module: 'clients' | 'grills' | 'loans' | 'tontine' | 'transactions' | 'reports' | 'settings';
+  actions: ('view' | 'create' | 'edit' | 'delete')[];
+}
+
+export interface OrganizationSettings {
+  language: 'en' | 'fr' | 'htg' | 'es';
+  currency: 'USD' | 'HTG' | 'EUR';
+  timezone: string;
+  dateFormat: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD';
+  theme: {
+    primaryColor: string;
+    secondaryColor: string;
+    darkMode: boolean;
+  };
+  features: {
+    loans: boolean;
+    tontine: boolean;
+    multiCurrency: boolean;
+    advancedReports: boolean;
+  };
+  notifications: {
+    emailNotifications: boolean;
+    smsNotifications: boolean;
+    pushNotifications: boolean;
+  };
+}
+
 export interface AppState {
   clients: Client[];
   grills: Grill[];
@@ -147,4 +188,6 @@ export interface AppState {
   notifications: Notification[];
   tontineGroups: TontineGroup[];
   currentTontineGroup: TontineGroup | null;
+  organizationMembers: OrganizationMember[];
+  organizationSettings: OrganizationSettings;
 }

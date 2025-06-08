@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import { AppState, Client, Grill, Payment, Withdrawal, Loan, LoanPayment, Transfer, AdminProfile, Notification, TontineGroup, Deposit } from '../types';
+import { AppState, Client, Grill, Payment, Withdrawal, Loan, LoanPayment, Transfer, AdminProfile, Notification, TontineGroup, Deposit, OrganizationMember, OrganizationSettings } from '../types';
 import { generatePayments } from '../utils/grillUtils';
 import { useAuth } from './AuthContext';
 
@@ -44,6 +44,10 @@ type Action =
       contributionId: string; 
       status: 'paid' | 'pending';
     }}
+  | { type: 'ADD_ORGANIZATION_MEMBER'; payload: OrganizationMember }
+  | { type: 'UPDATE_ORGANIZATION_MEMBER'; payload: OrganizationMember }
+  | { type: 'DELETE_ORGANIZATION_MEMBER'; payload: string }
+  | { type: 'UPDATE_ORGANIZATION_SETTINGS'; payload: Partial<OrganizationSettings> }
   | { type: 'LOAD_ORGANIZATION_DATA'; payload: Partial<AppState> };
 
 const defaultGrills: Grill[] = [
@@ -73,6 +77,29 @@ const defaultGrills: Grill[] = [
   },
 ];
 
+const defaultOrganizationSettings: OrganizationSettings = {
+  language: 'en',
+  currency: 'USD',
+  timezone: 'America/New_York',
+  dateFormat: 'MM/DD/YYYY',
+  theme: {
+    primaryColor: '#8B5CF6',
+    secondaryColor: '#4F46E5',
+    darkMode: false,
+  },
+  features: {
+    loans: true,
+    tontine: true,
+    multiCurrency: false,
+    advancedReports: true,
+  },
+  notifications: {
+    emailNotifications: true,
+    smsNotifications: false,
+    pushNotifications: true,
+  },
+};
+
 const initialState: AppState = {
   clients: [],
   grills: defaultGrills,
@@ -87,7 +114,9 @@ const initialState: AppState = {
   },
   notifications: [],
   tontineGroups: [],
-  currentTontineGroup: null
+  currentTontineGroup: null,
+  organizationMembers: [],
+  organizationSettings: defaultOrganizationSettings
 };
 
 const loadSavedState = (organizationId: string): Partial<AppState> => {
@@ -100,7 +129,9 @@ const loadSavedState = (organizationId: string): Partial<AppState> => {
         grills: Array.isArray(parsedState.grills) ? parsedState.grills : defaultGrills,
         tontineGroups: Array.isArray(parsedState.tontineGroups) ? parsedState.tontineGroups : [],
         adminProfile: parsedState.adminProfile || initialState.adminProfile,
-        notifications: Array.isArray(parsedState.notifications) ? parsedState.notifications : []
+        notifications: Array.isArray(parsedState.notifications) ? parsedState.notifications : [],
+        organizationMembers: Array.isArray(parsedState.organizationMembers) ? parsedState.organizationMembers : [],
+        organizationSettings: parsedState.organizationSettings || defaultOrganizationSettings
       };
     }
   } catch (error) {
@@ -124,7 +155,9 @@ const saveState = (state: AppState, organizationId: string) => {
       grills: state.grills,
       tontineGroups: state.tontineGroups,
       adminProfile: state.adminProfile,
-      notifications: state.notifications
+      notifications: state.notifications,
+      organizationMembers: state.organizationMembers,
+      organizationSettings: state.organizationSettings
     };
     localStorage.setItem(`appState_${organizationId}`, JSON.stringify(stateToSave));
   } catch (error) {
@@ -657,6 +690,39 @@ const reducer = (state: AppState, action: Action): AppState => {
       };
       break;
     }
+
+    case 'ADD_ORGANIZATION_MEMBER':
+      newState = {
+        ...state,
+        organizationMembers: [...state.organizationMembers, action.payload]
+      };
+      break;
+
+    case 'UPDATE_ORGANIZATION_MEMBER':
+      newState = {
+        ...state,
+        organizationMembers: state.organizationMembers.map(member =>
+          member.id === action.payload.id ? action.payload : member
+        )
+      };
+      break;
+
+    case 'DELETE_ORGANIZATION_MEMBER':
+      newState = {
+        ...state,
+        organizationMembers: state.organizationMembers.filter(member => member.id !== action.payload)
+      };
+      break;
+
+    case 'UPDATE_ORGANIZATION_SETTINGS':
+      newState = {
+        ...state,
+        organizationSettings: {
+          ...state.organizationSettings,
+          ...action.payload
+        }
+      };
+      break;
 
     default:
       return state;

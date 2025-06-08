@@ -4,6 +4,9 @@ export interface Organization {
   email: string;
   logo?: string;
   createdAt: string;
+  adminId: string;
+  adminName: string;
+  adminEmail: string;
   settings: {
     theme: {
       primaryColor: string;
