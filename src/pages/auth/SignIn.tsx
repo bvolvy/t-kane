@@ -228,7 +228,7 @@ const SignIn: React.FC = () => {
               <div>
                 <h3 className="font-semibold text-white">Real-time Analytics & Reporting</h3>
                 <p className="text-purple-100 text-sm">Insights that drive growth</p>
-              </div> */
+              </div>
             </div>
           </div>
         </div>
