@@ -210,7 +210,7 @@ const SignIn: React.FC = () => {
               </div>
             </div>
             
-            <div className="flex items-center p-4 bg-white bg-opacity-10 rounded-xl backdrop-blur-sm">
+         //   <div className="flex items-center p-4 bg-white bg-opacity-10 rounded-xl backdrop-blur-sm">
               <div className="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-4">
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
