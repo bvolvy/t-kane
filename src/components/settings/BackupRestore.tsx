@@ -61,7 +61,7 @@ const BackupRestore: React.FC = () => {
       ).toString();
 
       // Create backup file with organization name
-      const blob = new Blob([encrypted], { type: 'text/plain;charset=utf-8' });
+      const blob = new Blob([encrypted], { type: 'text/plain;charset=utf-8;' });
       const filename = `tkane-backup-${authState.organization.name.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().slice(0, 10)}.tkbak`;
       
       saveAs(blob, filename);
