@@ -176,7 +176,7 @@ const SignIn: React.FC = () => {
           <div className="flex items-center justify-center mb-8">
             <div className="relative">
               {/* Main logo container with gradient background */}
-              <div className="w-20 h-20 bg-gradient-to-br from-white to-purple-100 rounded-3xl shadow-2xl flex items-center justify-center transform hover:scale-105 transition-transform duration-300">
+              <div className="w-30 h-30 bg-gradient-to-br from-white to-purple-100 rounded-3xl shadow-2xl flex items-center justify-center transform hover:scale-105 transition-transform duration-300">
                 {/* Cash image */}
                 <img 
                   src="/cash.png" 
