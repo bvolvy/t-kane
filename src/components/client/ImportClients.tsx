@@ -4,7 +4,7 @@ import { Upload, Download, AlertCircle, CheckCircle } from 'lucide-react';
 import Button from '../common/Button';
 import Card from '../common/Card';
 import Papa from 'papaparse';
-import { generateId } from '../../utils/grillUtils';
+import { generateId, generatePayments } from '../../utils/grillUtils';
 import { Client } from '../../types';
 
 const ImportClients: React.FC<{ onClose: () => void }> = ({ onClose }) => {
