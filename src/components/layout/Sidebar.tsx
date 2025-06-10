@@ -1,5 +1,6 @@
 import React from 'react';
 import { Home, Users, BarChart3, Settings, Table, X, CreditCard, ArrowRightLeft } from 'lucide-react';
+import { usePermissions } from '../../context/PermissionContext';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -9,16 +10,25 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, setActivePage, activePage }) => {
-  const menuItems = [
-    { icon: <Home size={20} />, label: 'Dashboard', value: 'dashboard' },
-    { icon: <Users size={20} />, label: 'Clients', value: 'clients' },
-    { icon: <Table size={20} />, label: 'Grill Templates', value: 'grills' },
-    { icon: <ArrowRightLeft size={20} />, label: 'Transactions', value: 'transactions' },
-    { icon: <CreditCard size={20} />, label: 'Loans', value: 'loans' },
-    { icon: <Users size={20} />, label: 'Tontine', value: 'tontine' },
-    { icon: <BarChart3 size={20} />, label: 'Reports', value: 'reports' },
-    { icon: <Settings size={20} />, label: 'Settings', value: 'settings' },
+  const { canAccess, isOwner } = usePermissions();
+
+  const allMenuItems = [
+    { icon: <Home size={20} />, label: 'Dashboard', value: 'dashboard', module: 'dashboard' },
+    { icon: <Users size={20} />, label: 'Clients', value: 'clients', module: 'clients' },
+    { icon: <Table size={20} />, label: 'Grill Templates', value: 'grills', module: 'grills' },
+    { icon: <ArrowRightLeft size={20} />, label: 'Transactions', value: 'transactions', module: 'transactions' },
+    { icon: <CreditCard size={20} />, label: 'Loans', value: 'loans', module: 'loans' },
+    { icon: <Users size={20} />, label: 'Tontine', value: 'tontine', module: 'tontine' },
+    { icon: <BarChart3 size={20} />, label: 'Reports', value: 'reports', module: 'reports' },
+    { icon: <Settings size={20} />, label: 'Settings', value: 'settings', module: 'settings' },
   ];
+
+  // Filter menu items based on permissions
+  const menuItems = allMenuItems.filter(item => {
+    if (item.value === 'dashboard') return true; // Dashboard is always accessible
+    if (item.value === 'settings' && !isOwner()) return false; // Only owners can access settings
+    return canAccess(item.module);
+  });
 
   const handleNavigation = (page: string) => {
     setActivePage(page);
@@ -87,4 +97,4 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, setActivePage, activ
   );
 };
 
-export default Sidebar
+export default Sidebar;

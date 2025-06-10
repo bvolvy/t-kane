@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../../context/AppContext';
+import { usePermissions } from '../../context/PermissionContext';
 import { Plus, Search, Edit, Trash, BarChart2, Upload } from 'lucide-react';
 import Button from '../common/Button';
+import PermissionGuard from '../common/PermissionGuard';
 import ClientForm from './ClientForm';
 import ImportClients from './ImportClients';
 import { Client } from '../../types';
@@ -10,6 +12,7 @@ import { calculateTotalExpected, calculateAmountPaid, calculateBalanceRemaining,
 
 const ClientList: React.FC = () => {
   const { state, dispatch } = useAppContext();
+  const { hasPermission } = usePermissions();
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [showImport, setShowImport] = useState(false);
@@ -43,7 +46,7 @@ const ClientList: React.FC = () => {
   );
 
   return (
-    <>
+    <PermissionGuard module="clients">
       <div className="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <h2 className="text-2xl font-bold text-gray-800">Clients</h2>
         <div className="flex flex-col sm:flex-row gap-3">
@@ -57,20 +60,23 @@ const ClientList: React.FC = () => {
             />
             <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
           </div>
-          <Button 
-            variant="secondary" 
-            leftIcon={<Upload size={18} />}
-            onClick={() => setShowImport(true)}
-          >
-            Import
-          </Button>
-          <Button 
-            variant="primary" 
-            leftIcon={<Plus size={18} />}
-            onClick={handleAddClient}
-          >
-            Add Client
-          </Button>
+          
+          <PermissionGuard module="clients" action="create" showMessage={false}>
+            <Button 
+              variant="secondary" 
+              leftIcon={<Upload size={18} />}
+              onClick={() => setShowImport(true)}
+            >
+              Import
+            </Button>
+            <Button 
+              variant="primary" 
+              leftIcon={<Plus size={18} />}
+              onClick={handleAddClient}
+            >
+              Add Client
+            </Button>
+          </PermissionGuard>
         </div>
       </div>
 
@@ -167,20 +173,26 @@ const ClientList: React.FC = () => {
                           >
                             <BarChart2 size={18} />
                           </button>
-                          <button
-                            onClick={() => handleEditClient(client)}
-                            className="text-blue-600 hover:text-blue-900 cursor-pointer"
-                            title="Edit Client"
-                          >
-                            <Edit size={18} />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteClient(client.id)}
-                            className="text-red-600 hover:text-red-900 cursor-pointer"
-                            title="Delete Client"
-                          >
-                            <Trash size={18} />
-                          </button>
+                          
+                          <PermissionGuard module="clients" action="edit" showMessage={false}>
+                            <button
+                              onClick={() => handleEditClient(client)}
+                              className="text-blue-600 hover:text-blue-900 cursor-pointer"
+                              title="Edit Client"
+                            >
+                              <Edit size={18} />
+                            </button>
+                          </PermissionGuard>
+                          
+                          <PermissionGuard module="clients" action="delete" showMessage={false}>
+                            <button
+                              onClick={() => handleDeleteClient(client.id)}
+                              className="text-red-600 hover:text-red-900 cursor-pointer"
+                              title="Delete Client"
+                            >
+                              <Trash size={18} />
+                            </button>
+                          </PermissionGuard>
                         </div>
                       </td>
                     </tr>
@@ -205,7 +217,7 @@ const ClientList: React.FC = () => {
       {showImport && (
         <ImportClients onClose={() => setShowImport(false)} />
       )}
-    </>
+    </PermissionGuard>
   );
 };
 

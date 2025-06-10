@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../../context/AppContext';
+import { usePermissions } from '../../context/PermissionContext';
 import { Plus, Edit, Trash } from 'lucide-react';
 import Button from '../common/Button';
+import PermissionGuard from '../common/PermissionGuard';
 import GrillForm from './GrillForm';
 import { Grill } from '../../types';
 import Card from '../common/Card';
@@ -9,6 +11,7 @@ import { calculateGrillTotal, calculateAdminEarnings, formatCurrency } from '../
 
 const GrillList: React.FC = () => {
   const { state, dispatch } = useAppContext();
+  const { hasPermission } = usePermissions();
   const [showForm, setShowForm] = useState(false);
   const [editingGrill, setEditingGrill] = useState<Grill | null>(null);
 
@@ -41,25 +44,29 @@ const GrillList: React.FC = () => {
   };
 
   return (
-    <>
+    <PermissionGuard module="grills">
       <div className="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <h2 className="text-2xl font-bold text-gray-800">Grill Templates</h2>
-        <Button 
-          variant="primary" 
-          leftIcon={<Plus size={18} />}
-          onClick={handleAddGrill}
-        >
-          Create Template
-        </Button>
+        <PermissionGuard module="grills" action="create" showMessage={false}>
+          <Button 
+            variant="primary" 
+            leftIcon={<Plus size={18} />}
+            onClick={handleAddGrill}
+          >
+            Create Template
+          </Button>
+        </PermissionGuard>
       </div>
 
       {state.grills.length === 0 ? (
         <Card>
           <div className="text-center py-6">
             <p className="text-gray-500 mb-4">No grill templates found.</p>
-            <Button variant="primary" onClick={handleAddGrill}>
-              Create your first template
-            </Button>
+            <PermissionGuard module="grills" action="create" showMessage={false}>
+              <Button variant="primary" onClick={handleAddGrill}>
+                Create your first template
+              </Button>
+            </PermissionGuard>
           </div>
         </Card>
       ) : (
@@ -79,21 +86,26 @@ const GrillList: React.FC = () => {
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="text-xl font-semibold text-gray-800">{grill.name}</h3>
                     <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleEditGrill(grill)}
-                        className="text-blue-600 hover:text-blue-900"
-                        title="Edit Template"
-                      >
-                        <Edit size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteGrill(grill.id)}
-                        className="text-red-600 hover:text-red-900"
-                        title="Delete Template"
-                        disabled={clientCount > 0}
-                      >
-                        <Trash size={18} />
-                      </button>
+                      <PermissionGuard module="grills" action="edit" showMessage={false}>
+                        <button
+                          onClick={() => handleEditGrill(grill)}
+                          className="text-blue-600 hover:text-blue-900"
+                          title="Edit Template"
+                        >
+                          <Edit size={18} />
+                        </button>
+                      </PermissionGuard>
+                      
+                      <PermissionGuard module="grills" action="delete" showMessage={false}>
+                        <button
+                          onClick={() => handleDeleteGrill(grill.id)}
+                          className="text-red-600 hover:text-red-900"
+                          title="Delete Template"
+                          disabled={clientCount > 0}
+                        >
+                          <Trash size={18} />
+                        </button>
+                      </PermissionGuard>
                     </div>
                   </div>
                   
@@ -155,7 +167,7 @@ const GrillList: React.FC = () => {
           }}
         />
       )}
-    </>
+    </PermissionGuard>
   );
 };
 
