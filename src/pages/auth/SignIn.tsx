@@ -238,7 +238,7 @@ const SignIn: React.FC = () => {
 
           <h2 className="text-3xl font-bold mb-6 text-center">Welcome to T-Kanè</h2>
           <p className="text-purple-100 mb-8 text-center leading-relaxed">
-            Manage your organization's financial operations efficiently and securely with our comprehensive platform.
+            Manage your T-Kanè's financial operations efficiently and securely with our comprehensive platform.
           </p>
 
           <div className="mt-8 space-y-6">
@@ -247,7 +247,7 @@ const SignIn: React.FC = () => {
                 <Shield className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-white">Secure Multi-Organization Platform</h3>
+                <h3 className="font-semibold text-white">Secure Mini-Banking Platform</h3>
                 <p className="text-purple-100 text-sm">Enterprise-grade security for your data</p>
               </div>
             </div>
