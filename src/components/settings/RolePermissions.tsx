@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { 
   Users, Plus, Edit, Trash, Shield, Mail, Calendar, 
   Eye, FileEdit, Trash2, UserPlus, Crown, Settings,
-  CheckCircle, XCircle, Clock, Copy, Send
+  CheckCircle, XCircle, Clock, Copy, Send, UserCheck
 } from 'lucide-react';
 import Button from '../common/Button';
 import Card from '../common/Card';
@@ -16,9 +16,17 @@ import { generateId } from '../../utils/grillUtils';
 const RolePermissions: React.FC = () => {
   const { state, dispatch } = useAppContext();
   const { state: authState } = useAuth();
+  const [showCreateForm, setShowCreateForm] = useState(false);
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [editingMember, setEditingMember] = useState<OrganizationMember | null>(null);
   const [showPermissionModal, setShowPermissionModal] = useState(false);
+  const [createData, setCreateData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    role: 'viewer' as OrganizationMember['role']
+  });
   const [inviteData, setInviteData] = useState({
     name: '',
     email: '',
@@ -26,6 +34,11 @@ const RolePermissions: React.FC = () => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [inviteLink, setInviteLink] = useState<string>('');
+  const [createdCredentials, setCreatedCredentials] = useState<{
+    email: string;
+    password: string;
+    name: string;
+  } | null>(null);
 
   const roleDefinitions = {
     owner: {
@@ -68,12 +81,45 @@ const RolePermissions: React.FC = () => {
     { module: 'settings', name: 'Organization Settings', actions: ['view', 'edit'] },
   ];
 
+  const handleCreateChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setCreateData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
   const handleInviteChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setInviteData(prev => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
+  };
+
+  const validateCreate = () => {
+    const newErrors: Record<string, string> = {};
+    if (!createData.name.trim()) newErrors.name = 'Name is required';
+    if (!createData.email.trim()) newErrors.email = 'Email is required';
+    if (!/\S+@\S+\.\S+/.test(createData.email)) newErrors.email = 'Invalid email format';
+    if (!createData.password) newErrors.password = 'Password is required';
+    if (createData.password.length < 8) newErrors.password = 'Password must be at least 8 characters';
+    if (createData.password !== createData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+    
+    // Check if email already exists
+    if (state.organizationMembers.some(m => m.email === createData.email)) {
+      newErrors.email = 'This email is already in use';
+    }
+
+    // Check if admin email is being used
+    if (createData.email === authState.user?.email) {
+      newErrors.email = 'Cannot use admin email for team member';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const validateInvite = () => {
@@ -131,6 +177,63 @@ const RolePermissions: React.FC = () => {
     return `${baseUrl}/join?token=${token}`;
   };
 
+  const handleCreateSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateCreate()) return;
+
+    const newMember: OrganizationMember = {
+      id: generateId(),
+      name: createData.name,
+      email: createData.email,
+      role: createData.role,
+      permissions: getDefaultPermissions(createData.role),
+      status: 'active',
+      invitedBy: authState.user?.id || '',
+      joinedAt: new Date().toISOString()
+    };
+
+    // Create user account directly
+    const userId = crypto.randomUUID();
+    const user = {
+      id: userId,
+      organizationId: authState.organization?.id,
+      email: createData.email,
+      name: createData.name,
+      role: createData.role,
+      createdAt: new Date().toISOString()
+    };
+
+    // Store user credentials
+    const userKey = `user_${createData.email}`;
+    localStorage.setItem(userKey, JSON.stringify({
+      ...user,
+      passwordHash: btoa(createData.password) // Simple encoding for demo
+    }));
+
+    dispatch({ type: 'ADD_ORGANIZATION_MEMBER', payload: newMember });
+
+    // Show created credentials
+    setCreatedCredentials({
+      email: createData.email,
+      password: createData.password,
+      name: createData.name
+    });
+
+    dispatch({
+      type: 'ADD_NOTIFICATION',
+      payload: {
+        id: crypto.randomUUID(),
+        title: 'Team Member Created',
+        message: `${createData.name} has been added to your organization with direct access`,
+        type: 'success',
+        date: new Date().toISOString(),
+        read: false
+      }
+    });
+
+    setCreateData({ name: '', email: '', password: '', confirmPassword: '', role: 'viewer' });
+  };
+
   const handleInviteSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateInvite()) return;
@@ -172,6 +275,10 @@ const RolePermissions: React.FC = () => {
     if (!member) return;
 
     if (window.confirm(`Are you sure you want to remove ${member.name} from your organization?`)) {
+      // Also remove user credentials if they exist
+      const userKey = `user_${member.email}`;
+      localStorage.removeItem(userKey);
+
       dispatch({ type: 'DELETE_ORGANIZATION_MEMBER', payload: memberId });
       
       dispatch({
@@ -204,6 +311,28 @@ const RolePermissions: React.FC = () => {
   const handleCustomPermissions = (member: OrganizationMember) => {
     setEditingMember(member);
     setShowPermissionModal(true);
+  };
+
+  const copyCredentials = () => {
+    if (!createdCredentials) return;
+    
+    const credentialsText = `Login Credentials for ${authState.organization?.name}
+Email: ${createdCredentials.email}
+Password: ${createdCredentials.password}
+Login URL: ${window.location.origin}/signin`;
+
+    navigator.clipboard.writeText(credentialsText);
+    dispatch({
+      type: 'ADD_NOTIFICATION',
+      payload: {
+        id: crypto.randomUUID(),
+        title: 'Credentials Copied',
+        message: 'Login credentials have been copied to clipboard',
+        type: 'success',
+        date: new Date().toISOString(),
+        read: false
+      }
+    });
   };
 
   const copyInviteLink = () => {
@@ -245,13 +374,22 @@ const RolePermissions: React.FC = () => {
           </p>
         </div>
         {isOwner && (
-          <Button
-            variant="primary"
-            leftIcon={<UserPlus size={18} />}
-            onClick={() => setShowInviteForm(true)}
-          >
-            Invite Member
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              leftIcon={<Send size={18} />}
+              onClick={() => setShowInviteForm(true)}
+            >
+              Send Invite
+            </Button>
+            <Button
+              variant="primary"
+              leftIcon={<UserPlus size={18} />}
+              onClick={() => setShowCreateForm(true)}
+            >
+              Create Member
+            </Button>
+          </div>
         )}
       </div>
 
@@ -444,12 +582,158 @@ const RolePermissions: React.FC = () => {
         </div>
       </Card>
 
+      {/* Create Member Modal */}
+      {showCreateForm && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden">
+            <div className="flex justify-between items-center p-4 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800">Create Team Member</h2>
+              <button
+                onClick={() => {
+                  setShowCreateForm(false);
+                  setCreatedCredentials(null);
+                }}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                <XCircle size={20} />
+              </button>
+            </div>
+
+            {!createdCredentials ? (
+              <form onSubmit={handleCreateSubmit} className="p-6">
+                <Input
+                  label="Full Name"
+                  name="name"
+                  value={createData.name}
+                  onChange={handleCreateChange}
+                  placeholder="Enter member's full name"
+                  fullWidth
+                  error={errors.name}
+                />
+
+                <Input
+                  label="Email Address"
+                  name="email"
+                  type="email"
+                  value={createData.email}
+                  onChange={handleCreateChange}
+                  placeholder="Enter member's email"
+                  fullWidth
+                  error={errors.email}
+                />
+
+                <Input
+                  label="Password"
+                  name="password"
+                  type="password"
+                  value={createData.password}
+                  onChange={handleCreateChange}
+                  placeholder="Create password for member"
+                  fullWidth
+                  error={errors.password}
+                />
+
+                <Input
+                  label="Confirm Password"
+                  name="confirmPassword"
+                  type="password"
+                  value={createData.confirmPassword}
+                  onChange={handleCreateChange}
+                  placeholder="Confirm password"
+                  fullWidth
+                  error={errors.confirmPassword}
+                />
+
+                <Select
+                  label="Role"
+                  name="role"
+                  value={createData.role}
+                  onChange={handleCreateChange}
+                  options={[
+                    { value: 'admin', label: 'Administrator' },
+                    { value: 'manager', label: 'Manager' },
+                    { value: 'viewer', label: 'Viewer' },
+                  ]}
+                  fullWidth
+                />
+
+                <div className="flex justify-end space-x-3 mt-6">
+                  <Button
+                    variant="secondary"
+                    type="button"
+                    onClick={() => setShowCreateForm(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button variant="primary" type="submit">
+                    Create Member
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              <div className="p-6">
+                <div className="text-center mb-6">
+                  <UserCheck className="w-12 h-12 text-green-500 mx-auto mb-3" />
+                  <h3 className="text-lg font-semibold text-gray-900">Member Created Successfully!</h3>
+                  <p className="text-gray-600">Share these credentials with {createdCredentials.name}</p>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                  <h4 className="font-medium text-gray-900 mb-3">Login Credentials</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Email:</span>
+                      <span className="font-medium">{createdCredentials.email}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Password:</span>
+                      <span className="font-mono bg-white px-2 py-1 rounded border">
+                        {createdCredentials.password}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Login URL:</span>
+                      <span className="font-medium text-purple-600">{window.location.origin}/signin</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+                  <p className="text-sm text-yellow-800">
+                    <strong>Important:</strong> Save these credentials securely. The password cannot be recovered later.
+                  </p>
+                </div>
+
+                <div className="flex justify-end space-x-3">
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setShowCreateForm(false);
+                      setCreatedCredentials(null);
+                    }}
+                  >
+                    Done
+                  </Button>
+                  <Button
+                    variant="primary"
+                    leftIcon={<Copy size={16} />}
+                    onClick={copyCredentials}
+                  >
+                    Copy Credentials
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Invite Form Modal */}
       {showInviteForm && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden">
             <div className="flex justify-between items-center p-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">Invite Team Member</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Send Invitation</h2>
               <button
                 onClick={() => {
                   setShowInviteForm(false);
