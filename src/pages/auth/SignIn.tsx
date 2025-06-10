@@ -247,7 +247,7 @@ const SignIn: React.FC = () => {
                 <Shield className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-white">Secure Mini-Banking Platform</h3>
+                <h3 className="font-semibold text-white">Secure Mini-Banking System</h3>
                 <p className="text-purple-100 text-sm">Enterprise-grade security for your data</p>
               </div>
             </div>
