@@ -29,7 +29,7 @@ function App() {
               } />
 
               {/* Redirect root to signin */}
-              <Route path="/" element={<Navigate to="/signin" replace />} />
+              <Route path="/" element={<Navigate to="/signin\" replace />} />
             </Routes>
           </PermissionProvider>
         </AppProvider>
