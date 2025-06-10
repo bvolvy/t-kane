@@ -25,7 +25,7 @@ export interface User {
   organizationId: string;
   email: string;
   name: string;
-  role: 'owner' | 'admin' | 'member';
+  role: 'owner' | 'admin' | 'manager' | 'viewer';
   avatar?: string;
   createdAt: string;
   lastLogin?: string;

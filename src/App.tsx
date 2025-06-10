@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
 import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
+import JoinOrganization from './pages/auth/JoinOrganization';
 import AdminPanel from './pages/AdminPanel';
 import PrivateRoute from './components/auth/PrivateRoute';
 
@@ -16,6 +17,7 @@ function App() {
             {/* Public Routes */}
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/join" element={<JoinOrganization />} />
             
             {/* Protected Routes */}
             <Route path="/dashboard/*" element={
@@ -25,7 +27,7 @@ function App() {
             } />
 
             {/* Redirect root to signin */}
-            <Route path="/" element={<Navigate to="/signin\" replace />} />
+            <Route path="/" element={<Navigate to="/signin" replace />} />
           </Routes>
         </AppProvider>
       </AuthProvider>

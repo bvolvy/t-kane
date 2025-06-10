@@ -41,31 +41,73 @@ const SignIn: React.FC = () => {
 
     setIsLoading(true);
     try {
-      // Simulate API call to get organization data
+      // Check for organization owner login
       const orgData = localStorage.getItem(`org_${formData.email}`);
-      if (!orgData) {
-        throw new Error('Organization not found');
+      if (orgData) {
+        const organization = JSON.parse(orgData);
+        const mockUser = {
+          id: organization.adminId,
+          organizationId: organization.id,
+          email: formData.email,
+          name: organization.adminName,
+          role: 'owner' as const,
+          createdAt: organization.createdAt
+        };
+
+        dispatch({ type: 'SET_USER', payload: mockUser });
+        dispatch({ type: 'SET_ORGANIZATION', payload: organization });
+        localStorage.setItem('authToken', `mock-token-${organization.id}`);
+        navigate('/dashboard');
+        return;
       }
 
-      const organization = JSON.parse(orgData);
-      const mockUser = {
-        id: organization.adminId,
-        organizationId: organization.id,
-        email: formData.email,
-        name: organization.adminName,
-        role: 'admin' as const,
-        createdAt: organization.createdAt
-      };
+      // Check for team member login
+      const userKey = `user_${formData.email}`;
+      const userData = localStorage.getItem(userKey);
+      if (userData) {
+        const user = JSON.parse(userData);
+        
+        // Verify password (simple check for demo)
+        if (btoa(formData.password) !== user.passwordHash) {
+          throw new Error('Invalid password');
+        }
 
-      // Update auth context with user and organization data
-      dispatch({ type: 'SET_USER', payload: mockUser });
-      dispatch({ type: 'SET_ORGANIZATION', payload: organization });
+        // Get organization data
+        const orgKeys = Object.keys(localStorage).filter(key => key.startsWith('org_'));
+        let organization = null;
+        
+        for (const key of orgKeys) {
+          const org = JSON.parse(localStorage.getItem(key) || '{}');
+          if (org.id === user.organizationId) {
+            organization = org;
+            break;
+          }
+        }
 
-      // Store auth token
-      localStorage.setItem('authToken', `mock-token-${organization.id}`);
+        if (!organization) {
+          throw new Error('Organization not found');
+        }
 
-      // Redirect to dashboard
-      navigate('/dashboard');
+        // Update last login
+        const appStateKey = `appState_${user.organizationId}`;
+        const appState = JSON.parse(localStorage.getItem(appStateKey) || '{}');
+        if (appState.organizationMembers) {
+          appState.organizationMembers = appState.organizationMembers.map((m: any) =>
+            m.email === formData.email
+              ? { ...m, lastLogin: new Date().toISOString() }
+              : m
+          );
+          localStorage.setItem(appStateKey, JSON.stringify(appState));
+        }
+
+        dispatch({ type: 'SET_USER', payload: user });
+        dispatch({ type: 'SET_ORGANIZATION', payload: organization });
+        localStorage.setItem('authToken', `token-${user.id}`);
+        navigate('/dashboard');
+        return;
+      }
+
+      throw new Error('Invalid email or password');
     } catch (error) {
       setErrors({
         submit: 'Invalid email or password'
@@ -209,9 +251,6 @@ const SignIn: React.FC = () => {
                 <p className="text-purple-100 text-sm">Enterprise-grade security for your data</p>
               </div>
             </div>
-
-          
-           
           </div>
         </div>
       </div>
